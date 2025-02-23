@@ -16,7 +16,6 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Run partial_d attack with a timeout"""
         try:
-
             if not isinstance(publickey, PrivateKey):
                 self.logger.error(
                     "[!] partial_d attack is only for partial private keys not pubkeys..."
@@ -25,7 +24,7 @@ class Attack(AbstractAttack):
 
             CMD = [
                 "sage",
-                "%s/sage/partial_d.sage" % rootpath,
+                f"{rootpath}/sage/partial_d.sage",
                 str(publickey.n),
                 str(publickey.e),
                 str(publickey.d),

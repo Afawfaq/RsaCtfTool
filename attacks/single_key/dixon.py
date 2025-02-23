@@ -4,44 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.number_theory import (
-    isqrt,
-    gcd,
-    is_prime,
-    primes,
-    powmod,
-    is_square,
-)
-import bitarray
-
-
-def dixon_factor(N, B=7):
-    if is_prime(N):
-        return N, 1
-
-    if is_square(N):
-        i = isqrt(N)
-        return i, i
-
-    base = primes(B)
-    lqbf = pow(base[-1], 2) + 1
-    QBF = bitarray.bitarray(lqbf)  # This is our quasi-bloom-filter
-
-    basej2N = []
-    for j in range(0, len(base)):
-        p = powmod(base[j], 2, N)
-        basej2N.append(p)
-        QBF[p] = 1  # We populate our quasi-bloom-filter
-
-    for i in range(isqrt(N), N):
-        i2N = pow(i, 2, N)
-        if i2N < lqbf and QBF[i2N] == 1:
-            for k in range(0, len(base)):
-                if QBF[basej2N[k]] == 1:
-                    # if i2N == basej2N[k]: # this is replaced with a quasi-bloom-filter
-                    f = gcd(i - base[k], N)
-                    if 1 < f < N:
-                        return f, N // f
+from lib.algos import dixon
 
 
 class Attack(AbstractAttack):
@@ -52,8 +15,8 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Run dixon attack with a timeout"""
         try:
-            if publickey.n <= 10**10:
-                publickey.p, publickey.q = dixon_factor(publickey.n)
+            if publickey.n <= 10_000_000_000:
+                publickey.p, publickey.q = dixon(publickey.n)
             else:
                 self.logger.error("[-] Dixon is too slow for pubkeys > 10^10...")
                 return None, None

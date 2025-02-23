@@ -13,15 +13,14 @@ class Attack(AbstractAttack):
         self.speed = AbstractAttack.speed_enum["fast"]
 
     def common_modulus_related_message_attack(self, c1, c2, k1, k2):
-
         if k1.n != k2.n:
             return None
 
         c1 = bytes_to_long(c1)
         c2 = bytes_to_long(c2)
 
-        deciphered_message = common_modulus_related_message(k1.e, k2.e, k1.n, c1, c2)
-        return long_to_bytes(deciphered_message)
+        decrypted_message = common_modulus_related_message(k1.e, k2.e, k1.n, c1, c2)
+        return long_to_bytes(decrypted_message)
 
     def attack(self, publickeys, cipher=[]):
         """Common modulus attack"""
@@ -32,12 +31,11 @@ class Attack(AbstractAttack):
 
         plains = []
         for k1, k2 in itertools.combinations(publickeys, 2):
-            for c1, c2 in itertools.combinations(cipher, 2):
-                plains.append(
-                    self.common_modulus_related_message_attack(c1, c2, k1, k2)
-                )
-
-        if all([_ is None for _ in plains]):
+            plains.extend(
+                self.common_modulus_related_message_attack(c1, c2, k1, k2)
+                for c1, c2 in itertools.combinations(cipher, 2)
+            )
+        if all(_ is None for _ in plains):
             plains = None
 
         return (None, plains)

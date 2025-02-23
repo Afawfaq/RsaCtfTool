@@ -10,8 +10,7 @@ from factordb.factordb import FactorDB
 def getfdb(composite):
     f = FactorDB(composite)
     f.connect()
-    r = f.get_factor_list()
-    return r
+    return f.get_factor_list()
 
 
 class Attack(AbstractAttack):
@@ -26,8 +25,9 @@ class Attack(AbstractAttack):
             if ilog10(n) < (10**8):
                 pq = getfdb(n)
                 if pq[0] != n:
-                    p,q = pq
-                    if publickey.n != int(p) * int(q): return None, None
+                    p, q = pq
+                    if publickey.n != int(p) * int(q):
+                        return None, None
                     publickey.p = p
                     publickey.q = q
                     priv_key = PrivateKey(
@@ -38,7 +38,9 @@ class Attack(AbstractAttack):
                     )
                     return priv_key, None
                 else:
-                    self.logger.error("[!] Composite not in factordb, couldn't factorize...")
+                    self.logger.error(
+                        "[!] Composite not in factordb, couldn't factorize..."
+                    )
                     return None, None
             else:
                 self.logger.error(

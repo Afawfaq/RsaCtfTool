@@ -19,7 +19,7 @@ class Attack(AbstractAttack):
         pubs = [pub.n for pub in publickeys]
         # Try to find the gcd between each pair of moduli and resolve the private keys if gcd > 1
         priv_keys = []
-        M = list_prod(pubs)
+        M = list_prod(tuple(pubs))
         for i in range(0, len(pubs)):
             pub = pubs[i]
             p = gcd(pub, M // pub)
@@ -30,10 +30,10 @@ class Attack(AbstractAttack):
                 # update each attackobj with a private_key
                 priv_key_1 = PrivateKey(int(x.p), int(x.q), int(x.e), int(x.n))
                 priv_keys.append(priv_key_1)
-                self.logger.info("[*] Found common factor in modulus for " + x.filename)
+                self.logger.info(f"[*] Found common factor in modulus for {x.filename}")
 
         priv_keys = list(set(priv_keys))
-        if len(priv_keys) == 0:
+        if not priv_keys:
             priv_keys = None
 
         return (priv_keys, None)

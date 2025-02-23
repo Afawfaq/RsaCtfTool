@@ -4,26 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
-from lib.number_theory import log, gcd, isqrt, primes, powmod
-
-
-def pollard_P_1(n, progress=True):
-    """Pollard P1 implementation"""
-    z = []
-    logn = log(isqrt(n))
-    prime = primes(997)
-
-    for j in range(0, len(prime)):
-        primej = prime[j]
-        logp = log(primej)
-        for i in range(1, int(logn / logp) + 1):
-            z.append(primej)
-
-    for pp in tqdm(prime, disable=(not progress)):
-        for i in range(0, len(z)):
-            p = gcd(n, powmod(pp, z[i], n) - 1)
-            if n > p > 1:
-                return p, n // p
+from lib.algos import pollard_P_1
 
 
 class Attack(AbstractAttack):

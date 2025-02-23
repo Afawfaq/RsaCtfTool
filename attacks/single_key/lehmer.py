@@ -3,21 +3,8 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
+from lib.algos import lehmer_machine
 from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt, is_square, is_congruent
-
-
-def lehmer_machine(n):
-    """
-    fermat based integer factorization
-    """
-    if is_congruent(n, 2, 4):
-        raise FactorizationError
-    y = 1
-    while not is_square(n + y * y):
-        y += 1
-    x = isqrt(n + y * y)
-    return x - y, x + y
 
 
 class Attack(AbstractAttack):
